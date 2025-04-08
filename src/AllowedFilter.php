@@ -34,20 +34,39 @@ class AllowedFilter
         $this->hasDefault = $hasDefault;
     }
 
-    public static function exact(string $name, ?string $internalName = null, mixed $default = null, bool $hasDefault = false): self
-    {
+    /**
+     * 创建精确匹配过滤器
+     */
+    public static function exact(
+        string $name,
+        ?string $internalName = null,
+        mixed $default = null,
+        bool $hasDefault = false,
+        bool $addRelationConstraint = true
+    ): self {
         $internalName = $internalName ?? $name;
 
-        return new static($name, new FiltersExact($internalName), $default, $hasDefault);
+        return new static($name, new FiltersExact($internalName, $addRelationConstraint), $default, $hasDefault);
     }
 
-    public static function partial(string $name, ?string $internalName = null, mixed $default = null, bool $hasDefault = false): self
-    {
+    /**
+     * 创建模糊匹配过滤器
+     */
+    public static function partial(
+        string $name,
+        ?string $internalName = null,
+        mixed $default = null,
+        bool $hasDefault = false,
+        bool $addRelationConstraint = true
+    ): self {
         $internalName = $internalName ?? $name;
 
-        return new static($name, new FiltersPartial($internalName), $default, $hasDefault);
+        return new static($name, new FiltersPartial($internalName, $addRelationConstraint), $default, $hasDefault);
     }
 
+    /**
+     * 创建基于查询作用域的过滤器
+     */
     public static function scope(string $name, ?string $internalName = null, mixed $default = null, bool $hasDefault = false): self
     {
         $internalName = $internalName ?? $name;
@@ -55,16 +74,25 @@ class AllowedFilter
         return new static($name, new FiltersScope($internalName), $default, $hasDefault);
     }
 
+    /**
+     * 创建基于回调函数的过滤器
+     */
     public static function callback(string $name, callable $callback, mixed $default = null, bool $hasDefault = false): self
     {
         return new static($name, new FiltersCallback($callback), $default, $hasDefault);
     }
 
+    /**
+     * 创建已删除记录过滤器
+     */
     public static function trashed(string $name = 'trashed', mixed $default = null, bool $hasDefault = false): self
     {
         return new static($name, new FiltersTrashed(), $default, $hasDefault);
     }
 
+    /**
+     * 创建自定义过滤器
+     */
     public static function custom(string $name, Filter $filter, mixed $default = null, bool $hasDefault = false): self
     {
         return new static($name, $filter, $default, $hasDefault);

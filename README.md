@@ -11,6 +11,7 @@
   - [基本过滤](#基本过滤)
   - [精确过滤](#精确过滤)
   - [部分匹配过滤](#部分匹配过滤)
+  - [关联表过滤](#关联表过滤)
   - [范围过滤](#范围过滤)
   - [自定义过滤器](#自定义过滤器)
   - [软删除过滤](#软删除过滤)
@@ -177,6 +178,51 @@ $users = QueryBuilder::for(User::class)
     ->get();
 
 // 等同于 $query->where('name', 'LIKE', '%John%')
+```
+
+### 关联表过滤
+
+你可以使用点符号语法过滤关联表中的属性：
+
+```php
+// 假设 User 模型有一个 posts 关联
+// GET /users?filter[posts.title]=Hyperf
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters('posts.title')
+    ->get();
+
+// 等同于
+// $query->whereHas('posts', function ($query) {
+//     $query->where('title', 'LIKE', '%Hyperf%');
+// })
+```
+
+你也可以使用精确匹配过滤器：
+
+```php
+// GET /users?filter[posts.id]=1
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters(AllowedFilter::exact('posts.id'))
+    ->get();
+```
+
+关联过滤功能支持多层嵌套关联：
+
+```php
+// GET /users?filter[posts.comments.author.name]=John
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters('posts.comments.author.name')
+    ->get();
+```
+
+如果你不想允许关联过滤，可以在创建过滤器时禁用它：
+
+```php
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters(
+        AllowedFilter::exact('name', null, null, false, false)
+    )
+    ->get();
 ```
 
 ### 范围过滤

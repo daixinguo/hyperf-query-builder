@@ -121,4 +121,12 @@ class QueryBuilder implements ArrayAccess
     {
         unset($this->subject[$offset]);
     }
+
+    /**
+     * 获取 Eloquent 查询构建器实例，用于关联过滤
+     */
+    public function getQuerybuilder(): EloquentBuilder
+    {
+        return $this->getEloquentBuilder();
+    }
 }
