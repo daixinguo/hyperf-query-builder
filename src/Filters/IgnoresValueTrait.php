@@ -6,35 +6,14 @@ namespace ApiElf\QueryBuilder\Filters;
 
 trait IgnoresValueTrait
 {
-    /** @var array */
-    protected $ignoredValues = [];
-
-    /** @var bool */
-    protected $ignoreStrictCheck = false;
-
-    /**
-     * @param mixed $values
-     * @param bool $isStrict
-     */
-    public function ignore($values, bool $isStrict = false): Filter
-    {
-        $values = is_array($values) ? $values : [$values];
-
-        $this->ignoredValues = array_merge($this->ignoredValues, $values);
-        $this->ignoreStrictCheck = $isStrict;
-
-        return $this;
-    }
-
     /**
      * @param mixed $value
      */
-    protected function isIgnoredValue($value): bool
+    protected function isIgnoredValue(mixed $value): bool
     {
-        if (is_array($value)) {
-            return false;
-        }
-
-        return in_array($value, $this->ignoredValues, $this->ignoreStrictCheck);
+        // 现在忽略值的逻辑在 AllowedFilter 中处理
+        // 这里只是为了保持兼容性，总是返回 false
+        // @phpstan-ignore-next-line
+        return false;
     }
 }

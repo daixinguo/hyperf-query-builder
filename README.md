@@ -156,6 +156,69 @@ $users = QueryBuilder::for(User::class)
 // 等同于 $query->where('email', 'john@example.com')
 ```
 
+### 开头匹配过滤
+
+使用`beginsWithStrict`过滤器进行以指定字符串开头的匹配：
+
+```php
+// GET /users?filter[username]=admin
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters(AllowedFilter::beginsWithStrict('username'))
+    ->get();
+
+// 等同于 $query->where('username', 'LIKE', 'admin%')
+```
+
+### 结尾匹配过滤
+
+使用`endsWithStrict`过滤器进行以指定字符串结尾的匹配：
+
+```php
+// GET /users?filter[email]=@company.com
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters(AllowedFilter::endsWithStrict('email'))
+    ->get();
+
+// 等同于 $query->where('email', 'LIKE', '%@company.com')
+```
+
+### 操作符过滤
+
+使用`operator`过滤器支持各种比较操作符：
+
+```php
+use ApiElf\QueryBuilder\Enums\FilterOperator;
+
+// GET /users?filter[age]=25 (大于等于25)
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters(
+        AllowedFilter::operator('age', FilterOperator::GREATER_THAN_OR_EQUAL)
+    )
+    ->get();
+
+// GET /users?filter[score]=100 (小于100)
+$users = QueryBuilder::for(User::class)
+    ->allowedFilters(
+        AllowedFilter::operator('score', FilterOperator::LESS_THAN)
+    )
+    ->get();
+
+// 支持的操作符：EQUAL, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN_OR_EQUAL, NOT_EQUAL
+```
+
+### BelongsTo 关联过滤
+
+使用`belongsTo`过滤器专门处理 BelongsTo 关联：
+
+```php
+// GET /posts?filter[author]=1
+$posts = QueryBuilder::for(Post::class)
+    ->allowedFilters(AllowedFilter::belongsTo('author'))
+    ->get();
+
+// 自动处理外键关联
+```
+
 你也可以为过滤器指定一个内部名称，这在字段名称与过滤器名称不同时很有用：
 
 ```php

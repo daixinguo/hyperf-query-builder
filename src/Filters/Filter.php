@@ -14,10 +14,4 @@ interface Filter
      * @param string $property
      */
     public function __invoke(QueryBuilder $query, $value, string $property);
-
-    /**
-     * @param mixed $values
-     * @param bool $isStrict
-     */
-    public function ignore($values, bool $isStrict = false): self;
 }

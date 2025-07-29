@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace ApiElf\QueryBuilder\Filters;
 
-use Hyperf\Collection\Arr;
 use ApiElf\QueryBuilder\QueryBuilder;
 use Hyperf\Database\Model\Relations\Relation;
 use Hyperf\Collection\Collection;
 use Hyperf\Stringable\Str;
 use Hyperf\Database\Model\Builder;
 
-class FiltersExact implements Filter
+class FiltersBeginsWithStrict implements Filter
 {
     use IgnoresValueTrait;
 
@@ -43,11 +42,15 @@ class FiltersExact implements Filter
 
         // 常规属性过滤
         if (is_array($value)) {
-            $query->whereIn($property, $value);
+            $query->where(function ($query) use ($property, $value) {
+                foreach ($value as $singleValue) {
+                    $query->orWhere($property, 'LIKE', $singleValue . '%');
+                }
+            });
             return;
         }
 
-        $query->where($property, '=', $value);
+        $query->where($property, 'LIKE', $value . '%');
     }
 
     /**
@@ -90,11 +93,15 @@ class FiltersExact implements Filter
 
             // 递归调用自身处理嵌套关联
             if (is_array($value)) {
-                $query->whereIn($property, $value);
+                $query->where(function ($query) use ($property, $value) {
+                    foreach ($value as $singleValue) {
+                        $query->orWhere($property, 'LIKE', $singleValue . '%');
+                    }
+                });
                 return;
             }
 
-            $query->where($property, '=', $value);
+            $query->where($property, 'LIKE', $value . '%');
         });
     }
 }

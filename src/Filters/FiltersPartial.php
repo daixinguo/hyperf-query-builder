@@ -27,10 +27,10 @@ class FiltersPartial extends FiltersExact implements Filter
 
         // 常规属性模糊匹配
         if (is_array($value)) {
-            $query->where(function (QueryBuilder $query) use ($value) {
+            $query->where(function (QueryBuilder $query) use ($value, $property) {
                 foreach ($value as $partialValue) {
                     if (!$this->isIgnoredValue($partialValue)) {
-                        $query->orWhere($this->internalName, 'LIKE', "%{$partialValue}%");
+                        $query->orWhere($property, 'LIKE', "%{$partialValue}%");
                     }
                 }
             });
@@ -38,7 +38,7 @@ class FiltersPartial extends FiltersExact implements Filter
             return;
         }
 
-        $query->where($this->internalName, 'LIKE', "%{$value}%");
+        $query->where($property, 'LIKE', "%{$value}%");
     }
 
     /**
